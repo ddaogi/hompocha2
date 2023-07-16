@@ -14,11 +14,11 @@ export class OpenviduService {
 
   async createSession(body: any) {
     try {
-      console.log(this.openvidu.activeSessions);
+      // console.log(this.openvidu.activeSessions);
       const session = await this.openvidu.createSession(body);
+      console.log(session.sessionId);
       return session.sessionId;
     } catch (err) {
-      console.log('create Session catch');
       console.log('Error stack:', err.stack);
       throw new HttpException(
         'Error Creating session: ' + err.message,
@@ -27,6 +27,7 @@ export class OpenviduService {
     }
   }
 
+  // CREATESSION
   async createConnection(sessionId: string, body: any) {
     const session = this.openvidu.activeSessions.find(
       (s) => s.sessionId === sessionId,
@@ -36,7 +37,10 @@ export class OpenviduService {
     } else {
       try {
         const connection = await session.createConnection(body);
-        return connection.token;
+        const url = new URL(connection.token);
+        const token = url.searchParams.get('token');
+        return token;
+        // return connection.token;
       } catch (err) {
         throw new HttpException(
           'Error creating connection: ' + err.message,
